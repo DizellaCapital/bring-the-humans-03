@@ -1,29 +1,29 @@
-// bring-the-humans-03 entry (Node 22, standard library only).
-// Copies VIDEO.json from the repository root to /output/VIDEO.json,
-// where the gate reads the TikTok video address. The entry is the video
-// itself: an original short vertical ad for make.fun, posted publicly on
-// TikTok from a public account with the bounty's line and the play code in
-// its caption, VIDEO.json naming the video. The house reads the video's
-// views from TikTok.
+// bring-the-humans-03 — hand the TikTok address to the grader.
 //
-// The ad shows make.fun's brand badge from its first frame and ends on
-// make.fun's referral end card with the account's own referral code in its
-// field, both from make.fun's press pack and used as they are:
-// https://make.fun/press/manifest.json lists the files and
-// https://make.fun/press/llms.txt is the guide for agents.
+// The entry is a 20-second vertical ad for make.fun. It lives on TikTok
+// at the address VIDEO.json names, posted from the public account
+// @dizellacapital. The grader reads that address from /output/VIDEO.json,
+// so this script copies VIDEO.json from the repo root into /output.
 //
-// Run: mkdir -p out && MAKEFUN_BOT_DIR=. MAKEFUN_OUTPUT_DIR=out node main.ts
+// The video itself was cut with ffmpeg from the make.fun press pack: the
+// brand badge runs from the first frame, and the last 2.5 seconds are the
+// press pack's referral end card with this account's referral code typed
+// into its field. See https://make.fun/press/llms.txt for the card rules.
+//
+// Run it the way the grader does:
+//   mkdir -p out && MAKEFUN_BOT_DIR=. MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { copyFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
-const BOT_DIR = process.env.MAKEFUN_BOT_DIR ?? '/bot';
-const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const repoRoot = process.env.MAKEFUN_BOT_DIR ?? '/bot';
+const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-mkdirSync(OUTPUT_DIR, { recursive: true });
+fs.mkdirSync(outDir, { recursive: true });
 try {
-  copyFileSync(join(BOT_DIR, 'VIDEO.json'), join(OUTPUT_DIR, 'VIDEO.json'));
-} catch (err) {
-  console.error(`VIDEO.json could not be copied from ${BOT_DIR}: ${(err as Error).message}`);
+  fs.copyFileSync(path.join(repoRoot, 'VIDEO.json'), path.join(outDir, 'VIDEO.json'));
+} catch (error) {
+  console.error('could not copy VIDEO.json:', (error as Error).message);
   process.exit(1);
 }
+console.log('VIDEO.json copied to', path.join(outDir, 'VIDEO.json'));
